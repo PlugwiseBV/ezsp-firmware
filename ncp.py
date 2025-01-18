@@ -57,6 +57,13 @@ SONOFF_BAUD = 115200
 SONOFF_XON_XOFF = True
 SONOFF_RTS_CTS = False
 
+# bitronvideo (after stack update)
+BITRON_VID = '10C4'
+BITRON_PID = '8B34'
+BITRON_BAUD = 115200
+BITRON_XON_XOFF = True
+BITRON_RTS_CTS = False
+
 def is_valid_file(parser, arg):
     if not os.path.isfile(arg):
         parser.error("The file %s does not exist!" % arg)
@@ -279,6 +286,13 @@ def flash(port, file):
                 XON_XOFF = WSTK_XON_XOFF
                 RTS_CTS = WSTK_RTS_CTS
                 break
+            # Check if bitronvideo board
+            if vid == BITRON_VID and pid == BITRON_PID:
+                print('bitronvideo board')
+                BAUD = BITRON_BAUD
+                XON_XOFF = BITRON_XON_XOFF
+                RTS_CTS = BITRON_RTS_CTS
+                break
 
     # Init serial port
     ser = serial.Serial(
@@ -391,7 +405,7 @@ def scan():
             portjson['pid'] = pid
 
             # Check which USB NCP device
-            if vid == CEL_VID and pid == CEL_PID or vid == WSTK_VID and pid == WSTK_PID or vid == ETRX_VID and pid == ETRX_PID or vid == SONOFF_VID and pid == SONOFF_PID:
+            if vid == CEL_VID and pid == CEL_PID or vid == WSTK_VID and pid == WSTK_PID or vid == ETRX_VID and pid == ETRX_PID or vid == SONOFF_VID and pid == SONOFF_PID or vid == BITRON_VID and pid == BITRON_PID:
                 # Use EM3588 USB stick as default
                 BAUD = CEL_BAUD
                 XON_XOFF = CEL_XON_XOFF
@@ -406,6 +420,10 @@ def scan():
                     BAUD = SONOFF_BAUD
                     XON_XOFF = SONOFF_XON_XOFF
                     RTS_CTS = SONOFF_RTS_CTS
+                if vid == BITRON_VID and pid == BITRON_PID:
+                    BAUD = BITRON_BAUD
+                    XON_XOFF = BITRON_XON_XOFF
+                    RTS_CTS = BITRON_RTS_CTS
                     
                 sys.stderr.write('Connecting to.. %s %s %s %s \n' % (port[0], BAUD, XON_XOFF, RTS_CTS))
 
